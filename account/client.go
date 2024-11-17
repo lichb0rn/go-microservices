@@ -3,7 +3,7 @@ package account
 import (
 	"context"
 
-	pb "github.com/lichb0rn/go-microservices/account/pb"
+	"github.com/lichb0rn/go-microservices/account/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

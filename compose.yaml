@@ -1,0 +1,70 @@
+services:
+  account:
+    build:
+      context: .
+      dockerfile: ./account/app.Dockerfile
+    depends_on:
+      - account_db
+    environment:
+      DATABASE_URL: postgres://postgres@account_db:5432/gomicro?sslmode=disable
+    restart: on-failure
+
+  catalog:
+    build:
+      context: .
+      dockerfile: ./catalog/app.Dockerfile
+    depends_on:
+      - catalog_db
+    environment:
+      DATABASE_URL: http://catalog_db:9200
+    restart: on-failure
+
+  order:
+    build:
+      context: .
+      dockerfile: ./order/app.Dockerfile
+    depends_on:
+      - order_db
+    environment:
+      DATABASE_URL: postgres://postgres@order_db:5432/gomicro?sslmode=disable
+      ACCOUNT_SERVICE_URL: account:8080
+      CATALOG_SERVICE_URL: catalog:8080
+    restart: on-failure
+
+  graphql:
+    build:
+      context: .
+      dockerfile: ./graphql/app.Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      ACCOUNT_SERVICE_URL: account:8080
+      CATALOG_SERVICE_URL: catalog:8080
+      ORDER_SERVICE_URL: order:8080
+    restart: on-failure
+
+  account_db:
+    build:
+      context: ./account
+      dockerfile: ./db.Dockerfile
+    environment:
+      POSTGRES_DB: gomicro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    restart: unless-stopped
+
+  catalog_db:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.0
+    environment:
+      ES_JAVA_OPTS: '-Xms1g -Xmx1g'
+      discovery.type: single-node
+
+  order_db:
+    build:
+      context: ./order
+      dockerfile: ./db.Dockerfile
+    environment:
+      POSTGRES_DB: gomicro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    restart: unless-stopped

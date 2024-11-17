@@ -1,3 +1,4 @@
+//go:generate protoc --go_out=./ --go-grpc_out=./ account.proto
 package account
 
 import (
@@ -5,7 +6,7 @@ import (
 	"fmt"
 	"net"
 
-	pb "github.com/lichb0rn/go-microservices/account/pb"
+	"github.com/lichb0rn/go-microservices/account/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
