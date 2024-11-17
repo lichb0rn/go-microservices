@@ -40,15 +40,12 @@ func (r *postgresRepository) Ping() error {
 }
 
 func (r *postgresRepository) Put(ctx context.Context, a Account) error {
-	_, err := r.db.ExecContext(ctx, "INSERT INTO account (id, name) VALUES ($1, $2)", a.ID, a.Name)
-	if err != nil {
-		return err
-	}
-	return nil
+	_, err := r.db.ExecContext(ctx, "INSERT INTO accounts (id, name) VALUES ($1, $2)", a.ID, a.Name)
+	return err
 }
 
 func (r *postgresRepository) GetById(ctx context.Context, id string) (*Account, error) {
-	row := r.db.QueryRowContext(ctx, "SELECT id, name FROM account WHERE id = $1", id)
+	row := r.db.QueryRowContext(ctx, "SELECT id, name FROM accounts WHERE id = $1", id)
 	a := &Account{}
 	if err := row.Scan(&a.ID, &a.Name); err != nil {
 		return nil, err
@@ -57,7 +54,7 @@ func (r *postgresRepository) GetById(ctx context.Context, id string) (*Account, 
 }
 
 func (r *postgresRepository) List(ctx context.Context, skip uint64, take uint64) ([]Account, error) {
-	rows, err := r.db.QueryContext(ctx, "SELECT id, name FROM account DESC OFFSET $1 LIMIT $2", skip, take)
+	rows, err := r.db.QueryContext(ctx, "SELECT id, name FROM accounts DESC OFFSET $1 LIMIT $2", skip, take)
 	if err != nil {
 		return nil, err
 	}

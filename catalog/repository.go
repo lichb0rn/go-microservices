@@ -33,7 +33,11 @@ type productDocument struct {
 }
 
 func NewElasticRepository(url string) (Repository, error) {
-	client, err := elastic.NewClient(elastic.SetURL(url), elastic.SetSniff(false))
+	client, err := elastic.NewClient(
+		elastic.SetURL(url),
+		elastic.SetSniff(false),
+		elastic.SetBasicAuth("username", "password"),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -57,10 +61,8 @@ func (r *elasticRepository) Put(ctx context.Context, p Product) error {
 			Price:       p.Price,
 		}).
 		Do(ctx)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return err
 }
 
 func (r *elasticRepository) GetById(ctx context.Context, id string) (*Product, error) {

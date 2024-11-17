@@ -22,13 +22,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server, err := NewGraphQLServer(cfg.AccountURL, cfg.CatalogURL, cfg.OrderURL)
+	s, err := NewGraphQLServer(cfg.AccountURL, cfg.CatalogURL, cfg.OrderURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	http.Handle("/graphql", handler.New(server.ToExecutableSchema()))
-	http.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))
+	http.Handle("/graphql", handler.NewDefaultServer(s.ToExecutableSchema()))
+	http.Handle("/playground", playground.Handler("gomicro", "/graphql"))
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
